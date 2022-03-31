@@ -1,5 +1,5 @@
 # PGZ-Disk-Reader
-A very basic forensic tool. Please note that this tool is for very specific use, i.e. it assumes that the disk it reads is FAT-16 only and contains a deleted '.txt' file (analysis of deleted content is not flexible).
+A very basic forensic tool. Please note that this tool is for very specific use, i.e. it assumes that the disk it reads is FAT-16 only and contains a deleted '.txt' file (analysis of deleted content is not flexible). The sample image disk alongside the reader (*Sample_1.dd*) is the disk against which the program was used --and developed for.
 
 ### Partition information:
 - Display the number of partitions on the disk and for each partition display the start sector, size of partition and file system type.
@@ -12,4 +12,4 @@ A very basic forensic tool. Please note that this tool is for very specific use,
 
 ### NTFS Volume information:
 - Display bytes per sector and sectors per cluster for the NTFS volume
-- Display ector address and type and length of the first two attributes in the $MFT record
+- Display sector address and type and length of the first two attributes in the $MFT record
