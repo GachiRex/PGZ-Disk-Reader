@@ -4,32 +4,25 @@
 
 
 struct Partition {
-	int number;					//iteration
-	int bootable_partition;		//byte offset 0x00
-	char file_system_type[14];	//byte offset 0x04
-	int start_sector;			//byte offset 0x08
-	int size;					//byte offset 0x0C
+	int number;
+	int bootable_partition;
+	char file_system_type[14];
+	int start_sector;
+	int size;
 };
 
 struct FAT {
-	int sectors_per_cluster;	//byte offset 0x0D
-
+	int sectors_per_cluster;
 	int FAT_area_size;
-		//Size of FAT in sect. x No. of FAT copies ==> (0x10) * (0x16)(word)
-
 	int RootDir_size;
-		//Max No. of entries x Dir. entry size (bytes) / sector size ==> (0x11)(word) * 32 / 512
-
 	int cluster2_address;
-		//[First sector of FAT volume + Size of R.A + Size of FAT area] + Size of Root dir.
-		//[ 63 + 0x0E(word) +  FAT_area_size ] + RootDir_Size
 };
 
 struct Deleted_file {
-	char filename[11];			//11 byte filename
+	char filename[11];
 	int size;
 	int startingCluster;
-	char content[16];			//the 16 first characters of the content of the file
+	char content[16];
 	int cluster_nb;
 	int csa;
 };
@@ -66,42 +59,38 @@ struct NTFS ntfs;
 void mft_attribute(int code, char * attributeType) {
 	switch(code) {
 		case 0x10 : strcpy ( attributeType, "STANDARD-INFORMATION" ); 	break;
-		case 0x20 : strcpy ( attributeType, "ATTRIBUTE-LIST" ); 		break;
-		case 0x30 : strcpy ( attributeType, "FILE-NAME" ); 				break;
-		case 0x40 : strcpy ( attributeType, "OBJECT-ID" ); 				break;
+		case 0x20 : strcpy ( attributeType, "ATTRIBUTE-LIST" ); 	break;
+		case 0x30 : strcpy ( attributeType, "FILE-NAME" ); 		break;
+		case 0x40 : strcpy ( attributeType, "OBJECT-ID" ); 		break;
 		case 0x50 : strcpy ( attributeType, "SECURITY-DESCRIPTOR" ); 	break;
-		case 0x60 : strcpy ( attributeType, "VOLUME-NAME" ); 			break;
+		case 0x60 : strcpy ( attributeType, "VOLUME-NAME" ); 		break;
 		case 0x70 : strcpy ( attributeType, "VOLUME-INFORMATION" ); 	break;
-		case 0x80 : strcpy ( attributeType, "DATA" ); 					break;
-		case 0x90 : strcpy ( attributeType, "INDEX-ROOT" ); 			break;
-		case 0xA0 : strcpy ( attributeType, "INDEX-ALLOCATION" ); 		break;
-		case 0xB0 : strcpy ( attributeType, "BITMAP" ); 				break;
-		case 0xC0 : strcpy ( attributeType, "REPARSE-POINT" ); 			break;
+		case 0x80 : strcpy ( attributeType, "DATA" ); 			break;
+		case 0x90 : strcpy ( attributeType, "INDEX-ROOT" ); 		break;
+		case 0xA0 : strcpy ( attributeType, "INDEX-ALLOCATION" ); 	break;
+		case 0xB0 : strcpy ( attributeType, "BITMAP" ); 		break;
+		case 0xC0 : strcpy ( attributeType, "REPARSE-POINT" ); 		break;
 		case 0x100 : strcpy ( attributeType, "LOGGED-UTILITY-STREAM" ); break;
 	}
 }
 
 int main(int argc, char *argv[]) {
-
+	
+	//poo1TfIKftxhkIM1aB_6N9GpdNWEOeybayr7cTqRapQ
+	
 	if (argc != 2) {
 		fprintf(stderr, "Usage: 1 argument needed (disk image)\n");
 		return 0;
 	}
 
-//=============================================[Partition]=======================================
-
 	int offset = 16, invalid = 0, type, bootable;
 	char partitions_data[64];
-		//each partition is 16 bytes long and there are 4 partitions --hence 64
 
 	FILE *disk_image;
 	disk_image = fopen(argv[1],"rb");
 	fseek(disk_image, 0x1BE, SEEK_SET);
 
 	fread(partitions_data, 1, 64, disk_image);
-		//fread reads '64' items of data, each '1' byte
-		//long, from the stream pointed to by 'disk_image', storing them at the
-		//location given by 'partitions_data'
 
 	printf("------------------------------------------------------------------------------\n");
 
@@ -116,15 +105,13 @@ int main(int argc, char *argv[]) {
 			case 0 : strcpy ( partitions[i].file_system_type, "NOT-VALID"); invalid++ ; break;
 			case 1 : strcpy ( partitions[i].file_system_type, "12-BIT FAT"); break;
 			case 4 : strcpy ( partitions[i].file_system_type, "16-BIT FAT"); break;
-			//case 5 : strcpy ( partitions[i].file_system_type, "EXTENDED MS-DOS"); break;
 			case 6 : strcpy ( partitions[i].file_system_type, "FAT-16"); break;
-			case 7 : strcpy ( partitions[i].file_system_type, "NTFS"); 
-			ntfs.partition_number = i; break;
-			case 0xB : strcpy ( partitions[i].file_system_type, "FAT-32"); break;				//FAT-32 (CHS)
-			case 0xC : strcpy ( partitions[i].file_system_type, "FAT-32"); break;				//FAT-32 (LBA)
-			case 0xE : strcpy ( partitions[i].file_system_type, "FAT-16"); break;				//FAT-16 (LBA)
-			case 0x10 : strcpy (partitions[i].file_system_type, "FAT-16"); break;				//Hidden FAT-16
-			case 0x11 : strcpy (partitions[i].file_system_type, "NTFS") ; break;				//Hidden NTFS
+			case 7 : strcpy ( partitions[i].file_system_type, "NTFS"); ntfs.partition_number = i; break;
+			case 0xB : strcpy ( partitions[i].file_system_type, "FAT-32"); break;
+			case 0xC : strcpy ( partitions[i].file_system_type, "FAT-32"); break;
+			case 0xE : strcpy ( partitions[i].file_system_type, "FAT-16"); break;
+			case 0x10 : strcpy (partitions[i].file_system_type, "FAT-16"); break;
+			case 0x11 : strcpy (partitions[i].file_system_type, "NTFS") ; break;
 			default: strcpy ( partitions[i].file_system_type, "NOT-RECOGNIZED"); break;
 		}
 
@@ -139,12 +126,8 @@ int main(int argc, char *argv[]) {
 	printf("\nTotal number of valid partitions is: %d\n", 4-invalid);
 	printf("------------------------------------------------------------------------------\n");
 
-//==========================================[FAT Infos]==========================================
-//in this tool we assume that the first partition will be formatted as a FAT-16 always
-//int, char, short: reads certain nb of bytes (8, 1, 2 resp.)
-
-	fseek(disk_image, partitions[0].start_sector * 512, SEEK_SET);			//jump to sect 0 of FAT
-	char FAT_volume_data[64];												//FAT-16 volume's boot sector is 64 bytes long
+	fseek(disk_image, partitions[0].start_sector * 512, SEEK_SET);
+	char FAT_volume_data[64];
 	fread(FAT_volume_data, 1, 64, disk_image);
 
 	fat.sectors_per_cluster = *(char*)(FAT_volume_data + 0x0D);
@@ -167,8 +150,6 @@ int main(int argc, char *argv[]) {
 		fat.cluster2_address);
 	printf("------------------------------------------------------------------------------\n");
 
-//========================================[Deleted files]========================================
-
 	int dataArea_address = dataArea_start_sector * 512;
 	int RootDir_curr_data, nb_deleted_files;
 
@@ -179,7 +160,7 @@ int main(int argc, char *argv[]) {
 	printf("Search for a deleted file:\n\n");
 	printf("--Begins on Sector %d (0x%x)\n", dataArea_address/512, dataArea_address);
 
-	int j = 0, flag = 0;								//Flag for first deleted file encountered
+	int j = 0, flag = 0;
 	int first_deletedFile_address;
 
 	for (j ; j <= RootDir_max_nbEntries ; j++) {
@@ -197,11 +178,8 @@ int main(int argc, char *argv[]) {
 		nb_deleted_files);
 	printf("------------------------------------------------------------------------------\n");
 
-//=====================================[Deleted files info]======================================
-//in this tool we assume that the deleted file is a simple text file
-
 	fseek(disk_image, first_deletedFile_address, SEEK_SET);
-	char first_deletedFile_data[32];					//An entry is 32-bytes long
+	char first_deletedFile_data[32];
 	fread(first_deletedFile_data, 1, 32, disk_image);
 
 	printf("First Deleted File Information:\n\n");
@@ -226,10 +204,6 @@ int main(int argc, char *argv[]) {
 		delfile.content);
 	printf("------------------------------------------------------------------------------\n");
 
-//==========================================[NTFS Infos]=========================================
-
-
-
 	ntfs.address = partitions[ntfs.partition_number].start_sector * 512;
 	ntfs.size = partitions[ntfs.partition_number].size;
 
@@ -237,17 +211,17 @@ int main(int argc, char *argv[]) {
 	char ntfs_data[ntfs.size];
 	fread(ntfs_data, 1, ntfs.size, disk_image);
 
-	printf("NTFS Volume Information:\n\n");																		//NTFS starts on sector 1606500
+	printf("NTFS Volume Information:\n\n");
 
 	ntfs.bytes_per_sector = *(short*)(ntfs_data + 0x0B);
 	ntfs.sectors_per_cluster = *(char*)(ntfs_data + 0x0D);
 	ntfs.mft_logical_cluster_nb = *(long long*)(ntfs_data + 0x30);
 
-	int mft_offset = ntfs.mft_logical_cluster_nb * 8 * 512; 													//MFT offset: 32 sectors
-	ntfs.mft_sector_address = ntfs.address + mft_offset;													//MFT on sector 16065032
+	int mft_offset = ntfs.mft_logical_cluster_nb * 8 * 512; 
+	ntfs.mft_sector_address = ntfs.address + mft_offset;
 
 	ntfs.mft_first_AttributeOffset = *(short*)(ntfs_data + mft_offset + 0x14);
-	ntfs.mft_first_AttributeAddress = ntfs.address + ntfs.mft_first_AttributeOffset * 512; 						//1st Attribute offset : 0x38 bytes (56) from MFT start
+	ntfs.mft_first_AttributeAddress = ntfs.address + ntfs.mft_first_AttributeOffset * 512; 	
 	ntfs.mft_first_AttributeType_val = *(int*)(ntfs_data + mft_offset + ntfs.mft_first_AttributeOffset);
 	mft_attribute(ntfs.mft_first_AttributeType_val, ntfs.mft_first_AttributeType);
 	ntfs.mft_first_AttributeLength = *(int*)(ntfs_data + mft_offset + ntfs.mft_first_AttributeOffset + 0x04);
