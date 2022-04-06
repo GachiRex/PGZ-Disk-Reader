@@ -1,5 +1,5 @@
 # PGZ-Disk-Reader
-A very basic forensic tool. Please note that this tool is for very specific use, i.e. it assumes that the first partition of the disk it reads is FAT-16 oalways and that the disk contains a deleted '.txt' file (analysis of deleted content is not flexible). The sample image disk alongside the reader (*Sample_1.dd*) is the disk against which the program was used --and developed for.
+A very basic forensic tool. Please note that this tool is for very specific use, i.e. it assumes that the first partition of the disk it reads is FAT-16 always and that the disk contains a deleted '.txt' file (analysis of deleted content is not flexible). The sample image disk alongside the reader (*Sample_1.dd*) is the disk against which the program was used --and developed for.
 
 ### Partition information:
 - Display the number of partitions on the disk and for each partition display the start sector, size of partition and file system type.
