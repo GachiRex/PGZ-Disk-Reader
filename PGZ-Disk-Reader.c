@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
 	int dataArea_start_sector = ( 63 + RA_size + fat.FAT_area_size );
 	fat.cluster2_address = dataArea_start_sector + fat.RootDir_size;
 
-	printf("Partition 1 -- FAT Volume Information:\n\nSectors per cluster:   %d\n------FAT Area size:   %d\nRoot Directory size:   %d\n--Sector #2 Address:   %d\n",
+	printf("Partition 1 -- FAT Volume Information:\n\nSectors per cluster:   %d\n------FAT Area size:   %d\nRoot Directory size:   %d\n-Cluster #2 Address:   %d\n",
 		fat.sectors_per_cluster,
 		fat.FAT_area_size,
 		fat.RootDir_size,
