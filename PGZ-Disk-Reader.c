@@ -221,13 +221,13 @@ int main(int argc, char *argv[]) {
 	ntfs.mft_sector_address = ntfs.address + mft_offset;
 
 	ntfs.mft_first_AttributeOffset = *(short*)(ntfs_data + mft_offset + 0x14);
-	ntfs.mft_first_AttributeAddress = ntfs.address + ntfs.mft_first_AttributeOffset * 512; 	
+	ntfs.mft_first_AttributeAddress = ntfs.address + mft_offset + ntfs.mft_first_AttributeOffset; 	
 	ntfs.mft_first_AttributeType_val = *(int*)(ntfs_data + mft_offset + ntfs.mft_first_AttributeOffset);
 	mft_attribute(ntfs.mft_first_AttributeType_val, ntfs.mft_first_AttributeType);
 	ntfs.mft_first_AttributeLength = *(int*)(ntfs_data + mft_offset + ntfs.mft_first_AttributeOffset + 0x04);
 
 	ntfs.mft_second_AttributeOffset = ntfs.mft_first_AttributeOffset + ntfs.mft_first_AttributeLength;
-	ntfs.mft_second_AttributeAddress = ntfs.address + ntfs.mft_second_AttributeOffset * 512; 
+	ntfs.mft_second_AttributeAddress = ntfs.mft_first_AttributeAddress + ntfs.mft_first_AttributeLength;
 	ntfs.mft_second_AttributeType_val = *(int*)(ntfs_data + mft_offset + ntfs.mft_second_AttributeOffset);
 	mft_attribute(ntfs.mft_second_AttributeType_val, ntfs.mft_second_AttributeType);
 	ntfs.mft_second_AttributeLength = *(int*)(ntfs_data + mft_offset + ntfs.mft_second_AttributeOffset + 0x04);
@@ -238,19 +238,19 @@ int main(int argc, char *argv[]) {
 		ntfs.sectors_per_cluster,
 		ntfs.mft_logical_cluster_nb);
 
-	printf("\nMFT: Two First Attributes Information:\n");
-	printf("\nAttribute 1:\n---Type: %-22s\n-Length: 0x%x (%3d)\nAddress: 0x%x\n-Sector: %d\n",
+	printf("\n$MFT Sector address: %d\n",
+		ntfs.mft_sector_address/512);
+	printf("\n$MFT: Two First Attributes Information:\n");
+	printf("\nAttribute 1:\n---Type: %-22s\n-Length: 0x%x (%3d)\nAddress: 0x%x\n",
 		ntfs.mft_first_AttributeType,
 		ntfs.mft_first_AttributeLength,
 		ntfs.mft_first_AttributeLength,
-		ntfs.mft_first_AttributeAddress,
-		ntfs.mft_sector_address/512);
-	printf("\nAttribute 2:\n---Type: %-22s\n-Length: 0x%x (%3d)\nAddress: 0x%x\n-Sector: %d\n",
+		ntfs.mft_first_AttributeAddress);
+	printf("\nAttribute 2:\n---Type: %-22s\n-Length: 0x%x (%3d)\nAddress: 0x%x\n",
 		ntfs.mft_second_AttributeType,
 		ntfs.mft_second_AttributeLength,
 		ntfs.mft_second_AttributeLength,
-		ntfs.mft_second_AttributeAddress,
-		ntfs.mft_sector_address/512);
+		ntfs.mft_second_AttributeAddress);
 
 	printf("------------------------------------------------------------------------------\n");
 
